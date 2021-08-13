@@ -39,12 +39,19 @@ def savecontact(): # Создание контакта
         contactNumber.destroy()
         deleteb.destroy()
         changeb.destroy()
+        contacts.remove(saveTitle)
+        contacts.remove(saveNumber)
+        print(contacts)
 
     def change():  # Изменение контакта
         def changecontact():
             nonlocal contactNumber
             nonlocal contactTitle
+            nonlocal saveTitle
+            nonlocal saveNumber
             global score
+            contacts.remove(saveTitle)
+            contacts.remove(saveNumber)
             saveNumber = editTitle.get('1.0', 'end-1c')
             saveTitle = editNumber.get('1.0', 'end-1c')
             # contactTitle_edit = Label(text=saveTitle, font='25', master=addresBook)  # Добавление контакта
@@ -54,11 +61,15 @@ def savecontact(): # Создание контакта
                 contactNumber.destroy()
                 contactTitle = Label(text=saveTitle, font='25')
                 contactNumber = Label(text=saveNumber, font='25')
+                print(contacts)
                 score += 1
                 contactNumber.grid(row=score, column=1)
                 contactTitle.grid(row=score, column=0)
                 changeb.grid(row=score, column=2)
                 deleteb.grid(row=score, column=3)
+                contacts.append(saveTitle)
+                contacts.append(saveNumber)
+                print(contacts)
                 # contactNumber_edit.destroy()
                 # contactTitle_edit.destroy()
                 # contactTitle_edit = Label(text=saveTitle, font='25', master=addresBook)  # Добавление контакта
@@ -105,11 +116,31 @@ def savecontact(): # Создание контакта
         changeb.grid(row=score, column=2)
         deleteb.grid(row=score, column=3)
         contactNumber.grid(row=score, column=1)
+        contacts.append(saveTitle)
+        contacts.append(saveNumber)
+        print(contacts)
 
 
 def saveContacts():
-    open("contacts.txt", "r")
-    addresBook.destroy()
+    with open("contacts.txt", "w") as vc:
+        vc.seek(0)
+        for item in contacts:
+            vc.write("%s\n" %item)
+        print(contacts)
+        addresBook.destroy()
+
+
+def contactfromfile(namelabel, numberlabel):
+    global score
+    name = Label(text=namelabel, font="25")
+    number = Label(text=numberlabel, font="25")
+    name.grid(row=score, column=0)
+    number.grid(row=score, column=1)
+    # changeb = Button(text="Изменить",)
+    # deleteb = Button(text="Удалить", )
+    # changeb.grid(row=score, column=2)
+    # deleteb.grid(row=score, column=3)
+    score += 1
 
 
 if __name__ == '__main__':
@@ -121,6 +152,10 @@ if __name__ == '__main__':
 
     score = 1  # счетчик контактов
     contacts = []
+    with open("contacts.txt", "r") as vv:
+        lsts = [line.strip() for line in vv]
+        for savedcontacts in range(int(len(lsts)/2)):
+            contactfromfile(lsts[2*savedcontacts], lsts[2*savedcontacts+1])
 
     textinputTitle = Label(text='Введите название:', font='25')
     textinputNumber = Label(text='Введите номер:', font='25')
@@ -138,5 +173,6 @@ if __name__ == '__main__':
     save = Button(addresBook, text='Сохранить и выйти', width=15, height=2, command=saveContacts)
     save.place(x=285)
     add.place(x=400)
-
+    for contact in contacts:
+        print(contact)
     addresBook.mainloop()
